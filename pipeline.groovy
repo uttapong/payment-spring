@@ -11,7 +11,7 @@ pipeline {
         KUBECTL_HOME = '/opt/homebrew/bin/kubectl'
         BUILD_DATE = new Date().format('yyyy-MM-dd')
         IMAGE_TAG = "${BUILD_DATE}-${BUILD_NUMBER}"
-        IMAGE_NAME = 'orders' // Variable for the image name
+        IMAGE_NAME = 'payments' // Variable for the image name
         DOCKER_USERNAME = 'uttapong' // Variable for Docker Hub username
         K8S_NAMESPACE = 'minikube-local'
     }
@@ -35,7 +35,7 @@ pipeline {
         }
         stage('Build Maven') {
             steps {
-                checkout([$class: 'GitSCM', credentialsId: 'githubpwd', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/maxca/spring-java-jenkins.git']]])
+                checkout([$class: 'GitSCM', credentialsId: 'githubpwd', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/uttapong/payment-spring.git']]])
                 sh 'mvn clean install'
             }
         }
@@ -77,7 +77,7 @@ pipeline {
         }
         stage('Deploy to k8s') {
             steps {
-                withKubeConfig([credentialsId: 'kubectlpwd', serverUrl: 'https://127.0.0.1:51092']) {
+                withKubeConfig([credentialsId: 'kubectlpwd', serverUrl: 'https://127.0.0.1:52548']) {
                     script {
                         // Replace the image tag in the deployment YAML file
                         sh "sed -i '' 's/\$IMAGE_TAG/$IMAGE_TAG/g' k8s/deployment.yaml"
